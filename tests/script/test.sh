@@ -12,7 +12,7 @@ set +e
 FILE_NAME=
 VALGRIND=0
 TEST=0
-SLIM=0
+SLIM=1
 UNAME_BIN=`which uname`
 OS_TYPE=`$UNAME_BIN`
 while getopts "f:tmgv" arg

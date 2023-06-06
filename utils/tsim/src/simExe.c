@@ -427,13 +427,13 @@ bool simExecuteSystemCmd(SScript *script, char *option) {
   simReplaceDirSep(buf);
 #endif
 
+#if defined(TD_SLIM)
+  replaced = simReplaceStr(buf, "exec.sh", "exec.sh -m");
+#endif
+
   if (useValgrind) {
     replaced = simReplaceStr(buf, "exec.sh", "exec.sh -v");
   }
-
-#if defined(TD_SLIM)
-  replaced = simReplaceStr(buf, "exec.sh", "exec.sh -v -s");
-#endif
 
   simLogSql(buf, true);
   int32_t code = system(buf);
@@ -450,7 +450,7 @@ bool simExecuteSystemCmd(SScript *script, char *option) {
 
   sprintf(script->system_exit_code, "%d", code);
   script->linePos++;
-  if (replaced && strstr(buf, "start") != NULL) {
+  if (replaced && useValgrind && strstr(buf, "start") != NULL) {
     simInfo("====> startup is slow in valgrind mode, so sleep 5 seconds after exec.sh -s start");
     taosMsleep(5000);
   }

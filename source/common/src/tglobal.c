@@ -1346,6 +1346,20 @@ int32_t taosInitCfg(const char *cfgDir, const char **envCmd, const char *envFile
   }
   taosSetSystemCfg(tsCfg);
 
+#if defined(TD_SLIM)
+  tstrncpy(tsLocalFqdn, "localhost", TSDB_FQDN_LEN);
+  tstrncpy(tsLocalEp, "localhost:6030", TSDB_EP_LEN);
+  tstrncpy(tsFirst, "localhost:6030", TSDB_EP_LEN);
+  tstrncpy(tsSecond, "localhost:6030", TSDB_EP_LEN);
+  tsServerPort = 6030;
+  tsUseAdapter = false;
+  tsEnableMonitor = false;
+  tsEnableTelem = false;
+  tsEnableCrashReport = false;
+  tsStartUdfd = false;
+  tsAsyncLog = 0;
+#endif
+
   cfgDumpCfg(tsCfg, tsc, false);
 
   if (taosCheckGlobalCfg() != 0) {
