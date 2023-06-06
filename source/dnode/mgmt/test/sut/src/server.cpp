@@ -24,7 +24,7 @@ void* serverLoop(void* param) {
   }
 
   server->runnning = true;
-  if (dmRun() != 0) {
+  if (dmRun(0) != 0) {
     return NULL;
   }
 

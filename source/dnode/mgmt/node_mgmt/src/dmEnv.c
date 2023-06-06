@@ -141,9 +141,9 @@ void dmStop() {
   pDnode->stop = true;
 }
 
-int32_t dmRun() {
+int32_t dmRun(bool embedded) {
   SDnode *pDnode = dmInstance();
-  return dmRunDnode(pDnode);
+  return dmRunDnode(pDnode, embedded);
 }
 
 static int32_t dmProcessCreateNodeReq(EDndNodeType ntype, SRpcMsg *pMsg) {

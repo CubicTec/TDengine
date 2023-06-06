@@ -612,6 +612,11 @@ void taos_init_imp(void) {
   } else {
     tscError("failed to init slim since %s", terrstr());
   }
+  if (dmRun(1) == 0) {
+    tscInfo("slim is running");
+  } else {
+    tscError("failed to run slim since %s", terrstr());
+  }
 #else
   tscDebug("client is initialized successfully");
 #endif

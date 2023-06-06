@@ -350,7 +350,7 @@ int mainWindows(int argc, char **argv) {
 
   dInfo("start to init service");
   dmSetSignalHandle();
-  int32_t code = dmRun();
+  int32_t code = dmRun(0);
   dInfo("shutting down the service");
 
   dmCleanup();

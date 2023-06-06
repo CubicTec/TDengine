@@ -128,7 +128,7 @@ static void dmCloseNodes(SDnode *pDnode) {
   }
 }
 
-int32_t dmRunDnode(SDnode *pDnode) {
+int32_t dmRunDnode(SDnode *pDnode, bool embedded) {
   int32_t count = 0;
   if (dmOpenNodes(pDnode) != 0) {
     dError("failed to open nodes since %s", terrstr());
@@ -142,6 +142,11 @@ int32_t dmRunDnode(SDnode *pDnode) {
     dmStopNodes(pDnode);
     dmCloseNodes(pDnode);
     return -1;
+  }
+
+  if (embedded) {
+    taosMsleep(1000);
+    return 0;
   }
 
   while (1) {
@@ -162,4 +167,6 @@ int32_t dmRunDnode(SDnode *pDnode) {
     
     taosMsleep(100);
   }
+
+  return 0;
 }

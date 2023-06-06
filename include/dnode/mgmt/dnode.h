@@ -37,7 +37,7 @@ void dmCleanup();
 /**
  * @brief Run dnode.
  */
-int32_t dmRun();
+int32_t dmRun(bool embedded);
 
 /**
  * @brief Stop dnode.
