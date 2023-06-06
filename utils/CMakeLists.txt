@@ -1,4 +1,6 @@
 #ADD_SUBDIRECTORY(examples/c)
 ADD_SUBDIRECTORY(tsim)
+if (NOT ${BUILD_SLIM})
 ADD_SUBDIRECTORY(test/c)
+endif()
 #ADD_SUBDIRECTORY(comparisonTest/tdengine)

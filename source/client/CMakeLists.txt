@@ -1,5 +1,11 @@
 aux_source_directory(src CLIENT_SRC)
 
+if(${BUILD_SLIM})
+  SET(LINK_DNODE "dnode")
+else()
+  SET(LINK_DNODE "")
+endif()
+
 if(TD_WINDOWS)
     add_library(taos SHARED ${CLIENT_SRC} ${CMAKE_CURRENT_SOURCE_DIR}/src/taos.rc.in)
 else()
@@ -16,7 +22,7 @@ target_include_directories(
 target_link_libraries(
     taos
     INTERFACE api
-    PRIVATE os util common transport nodes parser command planner catalog scheduler function qcom
+    PRIVATE os util common transport nodes parser command planner catalog scheduler function qcom ${LINK_DNODE}
 )
 
 if(TD_DARWIN_ARM64)
@@ -48,6 +54,7 @@ set_target_properties(
     SOVERSION 1
 )
 
+if (NOT ${BUILD_SLIM})
 add_library(taos_static STATIC ${CLIENT_SRC})
 target_include_directories(
     taos_static
@@ -57,8 +64,9 @@ target_include_directories(
 target_link_libraries(
     taos_static
     INTERFACE api
-    PRIVATE os util common transport nodes parser command planner catalog scheduler function qcom
+    PRIVATE os util common transport nodes parser command planner catalog scheduler function qcom ${LINK_DNODE}
 )
+endif ()
 
 if(${BUILD_TEST})
     ADD_SUBDIRECTORY(test)

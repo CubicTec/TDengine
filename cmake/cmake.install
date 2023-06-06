@@ -1,5 +1,7 @@
 SET(PREPARE_ENV_CMD "prepare_env_cmd")
 SET(PREPARE_ENV_TARGET "prepare_env_target")
+
+IF (NOT ${BUILD_SLIM})
 ADD_CUSTOM_COMMAND(OUTPUT ${PREPARE_ENV_CMD}
     POST_BUILD
     COMMAND echo "make test directory"
@@ -13,6 +15,7 @@ ADD_CUSTOM_COMMAND(OUTPUT ${PREPARE_ENV_CMD}
     COMMAND ${CMAKE_COMMAND} -E echo monitor 0  >> ${TD_TESTS_OUTPUT_DIR}/cfg/taos.cfg
     COMMENT "prepare taosd environment")
 ADD_CUSTOM_TARGET(${PREPARE_ENV_TARGET} ALL WORKING_DIRECTORY ${TD_EXECUTABLE_OUTPUT_PATH} DEPENDS ${PREPARE_ENV_CMD})
+ENDIF ()
 
 IF (TD_LINUX)
   SET(TD_MAKE_INSTALL_SH "${TD_SOURCE_DIR}/packaging/tools/make_install.sh")

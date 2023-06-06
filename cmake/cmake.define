@@ -166,3 +166,8 @@ ELSE ()
     ENDIF()
 
 ENDIF ()
+
+IF (${BUILD_SLIM})
+  MESSAGE(STATUS "build slim version")
+  ADD_DEFINITIONS(-DTD_SLIM)
+ENDIF ()

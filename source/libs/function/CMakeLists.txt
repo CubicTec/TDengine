@@ -37,6 +37,8 @@ target_link_libraries(
     PUBLIC uv_a
 )
 
+if (NOT ${BUILD_SLIM})
+
 add_executable(runUdf test/runUdf.c)
 target_include_directories(
         runUdf
@@ -59,6 +61,8 @@ target_link_libraries(
         PUBLIC uv_a
         PRIVATE os util common nodes function ${LINK_JEMALLOC}
 )
+
+endif ()
 
 add_library(udf1 STATIC MODULE test/udf1.c)
 target_include_directories(
@@ -139,6 +143,7 @@ target_link_libraries(
     udf2_dup PUBLIC os ${LINK_JEMALLOC}
 )
 
+if (NOT ${BUILD_SLIM})
 #SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/build/bin)
 add_executable(udfd src/udfd.c)
 target_include_directories(
@@ -162,4 +167,4 @@ target_link_libraries(
     PUBLIC uv_a
     PRIVATE os util common nodes function ${LINK_JEMALLOC}
     )
-
+endif ()
