@@ -69,25 +69,29 @@ if [ "$pagMode" == "lite" ]; then
   bin_files="${build_dir}/bin/${serverName} ${build_dir}/bin/${clientName} ${script_dir}/remove.sh ${script_dir}/startPre.sh ${build_dir}/bin/taosBenchmark "
   taostools_bin_files=""
 else
-
-  wget https://github.com/taosdata/grafanaplugin/releases/latest/download/TDinsight.sh -O ${build_dir}/bin/TDinsight.sh \
+  if [ "$verMode" == "cloud" ]; then
+    taostools_bin_files=" ${build_dir}/bin/taosBenchmark"
+  else
+    wget https://github.com/taosdata/grafanaplugin/releases/latest/download/TDinsight.sh -O ${build_dir}/bin/TDinsight.sh \
       && echo "TDinsight.sh downloaded!" \
       || echo "failed to download TDinsight.sh"
-  # download TDinsight caches
-  orig_pwd=$(pwd)
-  tdinsight_caches=""
-  cd ${build_dir}/bin/ && \
-    chmod +x TDinsight.sh
-  ./TDinsight.sh --download-only ||:
-#  tdinsight_caches=$(./TDinsight.sh --download-only | xargs -I printf "${build_dir}/bin/{} ")
-  cd $orig_pwd
-  echo "TDinsight caches: $tdinsight_caches"
+    # download TDinsight caches
+    orig_pwd=$(pwd)
+    tdinsight_caches=""
+    cd ${build_dir}/bin/ && \
+      chmod +x TDinsight.sh
+    ./TDinsight.sh --download-only ||:
+    #  tdinsight_caches=$(./TDinsight.sh --download-only | xargs -I printf "${build_dir}/bin/{} ")
+    cd $orig_pwd
+    echo "TDinsight caches: $tdinsight_caches"
 
-  taostools_bin_files=" ${build_dir}/bin/taosdump \
+    taostools_bin_files=" ${build_dir}/bin/taosdump \
       ${build_dir}/bin/taosBenchmark \
       ${build_dir}/bin/TDinsight.sh \
       ${build_dir}/bin/tdengine-datasource.zip \
       ${build_dir}/bin/tdengine-datasource.zip.md5sum"
+  fi
+
   [ -f ${build_dir}/bin/taosx ] && taosx_bin="${build_dir}/bin/taosx"
   explorer_bin_files=$(find ${build_dir}/bin/ -name '*-explorer')
 
@@ -107,9 +111,11 @@ fi
 if [ "$osType" == "Darwin" ]; then
     lib_files="${build_dir}/lib/libtaos.${version}.dylib"
     wslib_files="${build_dir}/lib/libtaosws.dylib"
+    rocksdb_lib_files="${build_dir}/lib/librocksdb.dylib.8.1.1"
 else
     lib_files="${build_dir}/lib/libtaos.so.${version}"
     wslib_files="${build_dir}/lib/libtaosws.so"
+    rocksdb_lib_files="${build_dir}/lib/librocksdb.so.8.1.1"
 fi
 header_files="${code_dir}/include/client/taos.h ${code_dir}/include/common/taosdef.h ${code_dir}/include/util/taoserror.h ${code_dir}/include/libs/function/taosudf.h"
 
@@ -332,9 +338,10 @@ fi
 # Copy driver
 mkdir -p ${install_dir}/driver && cp ${lib_files} ${install_dir}/driver && echo "${versionComp}" >${install_dir}/driver/vercomp.txt
 [ -f ${wslib_files} ] && cp ${wslib_files} ${install_dir}/driver || :
+[ -f ${rocksdb_lib_files} ] && cp ${rocksdb_lib_files} ${install_dir}/driver || :
 
 # Copy connector
-if [ "$verMode" == "cluster" ] || [ "$verMode" == "cloud" ]; then
+if [ "$verMode" == "cluster" ]; then
     connector_dir="${code_dir}/connector"
     mkdir -p ${install_dir}/connector
     if [[ "$pagMode" != "lite" ]] && [[ "$cpuType" != "aarch32" ]]; then
@@ -424,7 +431,7 @@ if [ "$exitcode" != "0" ]; then
   exit $exitcode
 fi
 
-if [ -n "${taostools_bin_files}" ]; then
+if [ -n "${taostools_bin_files}" ] && [ "$verMode" != "cloud" ]; then
     wget https://github.com/taosdata/grafanaplugin/releases/latest/download/TDinsight.sh -O ${taostools_install_dir}/bin/TDinsight.sh && echo "TDinsight.sh downloaded!"|| echo "failed to download TDinsight.sh"
     if [ "$osType" != "Darwin" ]; then
         tar -zcv -f "$(basename ${taostools_pkg_name}).tar.gz" "$(basename ${taostools_install_dir})" --remove-files || :
