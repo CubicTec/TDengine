@@ -431,6 +431,10 @@ bool simExecuteSystemCmd(SScript *script, char *option) {
     replaced = simReplaceStr(buf, "exec.sh", "exec.sh -v");
   }
 
+#if defined(TD_SLIM)
+  replaced = simReplaceStr(buf, "exec.sh", "exec.sh -v -s");
+#endif
+
   simLogSql(buf, true);
   int32_t code = system(buf);
   int32_t repeatTimes = 0;

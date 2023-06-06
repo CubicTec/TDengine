@@ -25,8 +25,9 @@ OS_TYPE=`$UNAME_BIN`
 
 NODE_NAME=
 EXEC_OPTON=
+SLIM=0
 CLEAR_OPTION="false"
-while getopts "n:s:u:x:cv" arg
+while getopts "n:s:u:x:cvm" arg
 do
   case $arg in
     n)
@@ -43,6 +44,9 @@ do
       ;;
     u)
       USERS=$OPTARG
+      ;;
+    m)
+      SLIM=1
       ;;
     x)
       SIGNAL=$OPTARG
@@ -104,6 +108,8 @@ if [ "$CLEAR_OPTION" = "clear" ]; then
   rm -rf $MGMT_DIR
 fi
 
+if [ $SLIM -eq 0 ]; then
+
 if [ "$EXEC_OPTON" = "start" ]; then 
   #echo "ExcuteCmd:" $EXE_DIR/taosd -c $CFG_DIR  
   if [ "$VALGRIND_OPTION" = "true" ]; then 
@@ -134,3 +140,4 @@ else
   done 
 fi
 
+fi

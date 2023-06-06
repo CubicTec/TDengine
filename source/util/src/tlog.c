@@ -493,6 +493,12 @@ void taosPrintLog(const char *flags, ELogLevel level, int32_t dflag, const char 
   buffer[writeLen++] = '\n';
   buffer[writeLen] = 0;
 
+#if defined(TD_SLIM)
+  if (flags[0] != 'S' || flags[1] != 'I' || flags[2] != 'M') {
+    dflag = dflag & (~((int32_t)DEBUG_SCREEN));
+  }
+#endif
+
   taosPrintLogImp(level, dflag, buffer, writeLen);
 
   if (tsLogFp && level <= DEBUG_INFO) {

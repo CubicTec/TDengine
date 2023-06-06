@@ -12,9 +12,10 @@ set +e
 FILE_NAME=
 VALGRIND=0
 TEST=0
+SLIM=0
 UNAME_BIN=`which uname`
 OS_TYPE=`$UNAME_BIN`
-while getopts "f:tgv" arg
+while getopts "f:tmgv" arg
 do
   case $arg in
     f)
@@ -25,6 +26,9 @@ do
       ;;
     t)
       TEST=1
+      ;;
+    m)
+      SLIM=1
       ;;
     g)
       VALGRIND=2
@@ -49,14 +53,14 @@ else
 fi
 
 TOP_DIR=`pwd`
-TAOSD_DIR=`find . -name "taosd"|grep bin|head -n1`
+TAOSD_DIR=`find . -name "taos"|grep bin|head -n1`
 
 cut_opt="-f "
 
 if [[ "$TAOSD_DIR" == *"$IN_TDINTERNAL"* ]]; then
-  BIN_DIR=`find . -name "taosd"|grep bin|head -n1|cut -d '/' ${cut_opt}2,3`
+  BIN_DIR=`find . -name "taos"|grep bin|head -n1|cut -d '/' ${cut_opt}2,3`
 else
-  BIN_DIR=`find . -name "taosd"|grep bin|head -n1|cut -d '/' ${cut_opt}2`
+  BIN_DIR=`find . -name "taos"|grep bin|head -n1|cut -d '/' ${cut_opt}2`
 fi
 
 declare -x BUILD_DIR=$TOP_DIR/$BIN_DIR
@@ -80,6 +84,7 @@ echo "ASAN_DIR  : $ASAN_DIR"
 rm -rf $SIM_DIR/*
 rm -rf $LOG_DIR
 rm -rf $CFG_DIR
+rm -rf $DATA_DIR
 rm -rf $ASAN_DIR
 
 mkdir -p $PRG_DIR
@@ -93,11 +98,19 @@ TAOS_FLAG=$PRG_DIR/flag
 
 #HOSTNAME=`hostname -f`
 HOSTNAME=localhost
+PORT1=7100
+PORT2=7200
+
+if [ $SLIM -eq 1 ]; then
+  PORT1=6030
+  PORT2=6030
+fi
 
 echo " "                                          >> $TAOS_CFG
-echo "firstEp            ${HOSTNAME}:7100"        >> $TAOS_CFG
-echo "secondEp           ${HOSTNAME}:7200"        >> $TAOS_CFG
-echo "serverPort         7100"                    >> $TAOS_CFG
+echo "firstEp            ${HOSTNAME}:${PORT1}"    >> $TAOS_CFG
+echo "secondEp           ${HOSTNAME}:${PORT2}"    >> $TAOS_CFG
+echo "fqdn               ${HOSTNAME}"             >> $TAOS_CFG
+echo "serverPort         ${PORT1}"                >> $TAOS_CFG
 echo "dataDir            $DATA_DIR"               >> $TAOS_CFG
 echo "logDir             $LOG_DIR"                >> $TAOS_CFG
 echo "scriptDir          ${CODE_DIR}"             >> $TAOS_CFG

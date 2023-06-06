@@ -38,7 +38,13 @@ int32_t simInitCfg() {
 }
 
 bool simSystemInit() {
+#if defined(TD_SLIM)
+  taos_init();
+  SConfig *pCfg = taosGetCfg();
+  tstrncpy(simScriptDir, cfgGetItem(pCfg, "scriptDir")->str, PATH_MAX);
+#else
   simInitCfg();
+#endif
   simInitsimCmdList();
   memset(simScriptList, 0, sizeof(SScript *) * MAX_MAIN_SCRIPT_NUM);
   return true;
